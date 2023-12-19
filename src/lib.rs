@@ -47,6 +47,15 @@ impl Logger {
         println!("{log}");
     }
 
+    pub fn println(&self, content: impl fmt::Display) {
+        let content = content.to_string();
+        let time_zone = self.get_time_zone();
+        println!("{}", content);
+        if self.write_in_files {
+            file::write(&content, time_zone)
+        }
+    }
+
     #[track_caller]
     pub fn throw_error(&self, error: impl fmt::Display, description: &str) {
         let location = Location::caller();
