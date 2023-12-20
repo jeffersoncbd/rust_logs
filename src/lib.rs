@@ -6,7 +6,7 @@ use std::{fmt, panic::Location, process};
 
 pub use chrono::FixedOffset;
 
-fn mount_log(tag: &str, message: &str, time_zone: Option<&FixedOffset>) -> String {
+fn mount_log(tag: &str, message: impl fmt::Display, time_zone: Option<&FixedOffset>) -> String {
     format!(
         "🔹 [{}] {} - {}",
         time::now(time_zone).get_date_and_hour(),
@@ -38,7 +38,7 @@ impl Logger {
         print!("\x1B[2J\x1B[1;1H");
     }
 
-    pub fn log(&self, tag: &str, message: &str) {
+    pub fn log(&self, tag: &str, message: impl fmt::Display) {
         let time_zone = self.get_time_zone();
         let log = mount_log(tag, message, time_zone);
         if self.write_in_files {
@@ -57,7 +57,7 @@ impl Logger {
     }
 
     #[track_caller]
-    pub fn throw_error(&self, error: impl fmt::Display, description: &str) {
+    pub fn throw_error(&self, error: impl fmt::Display, description: impl fmt::Display) {
         let location = Location::caller();
         let time_zone = self.get_time_zone();
         let log = format!(
