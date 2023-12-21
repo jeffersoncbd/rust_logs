@@ -57,7 +57,7 @@ impl Logger {
     }
 
     #[track_caller]
-    pub fn throw_error(&self, error: impl fmt::Display, description: impl fmt::Display) {
+    pub fn throw_error(&self, error: impl fmt::Display, description: impl fmt::Display) -> ! {
         let location = Location::caller();
         let time_zone = self.get_time_zone();
         let log = format!(
@@ -71,6 +71,6 @@ impl Logger {
         if self.write_in_files {
             file::write(&log, time_zone)
         }
-        process::exit(1);
+        process::exit(1)
     }
 }
