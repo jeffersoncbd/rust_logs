@@ -6,7 +6,7 @@ use std::{
     path::Path,
 };
 
-pub fn write(log: &String, time_zone: Option<&FixedOffset>) {
+pub fn get_file(time_zone: Option<&FixedOffset>) -> File {
     let file_name = format!("logs/{}.txt", time::now(time_zone).get_date());
 
     if !Path::new("logs").exists() {
@@ -22,11 +22,21 @@ pub fn write(log: &String, time_zone: Option<&FixedOffset>) {
         }
     }
 
-    let mut file = OpenOptions::new()
+    OpenOptions::new()
         .write(true)
         .append(true)
         .open(file_name)
-        .unwrap();
+        .unwrap()
+}
+
+pub fn writeln(log: &String, time_zone: Option<&FixedOffset>) {
+    let mut file = get_file(time_zone);
     let log = log.replace("  ", " ");
     writeln!(file, "{log}").unwrap();
+}
+
+pub fn write(log: &String, time_zone: Option<&FixedOffset>) {
+    let mut file = get_file(time_zone);
+    let log = log.replace("  ", " ");
+    write!(file, "{log}").unwrap();
 }

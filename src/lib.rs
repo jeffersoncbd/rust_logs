@@ -42,15 +42,33 @@ impl Logger {
         let time_zone = self.get_time_zone();
         let log = mount_log(tag, message, time_zone);
         if self.write_in_files {
-            file::write(&log, time_zone)
+            file::writeln(&log, time_zone)
         }
         println!("{log}");
+    }
+
+    pub fn log_without_ln(&self, tag: &str, message: impl fmt::Display) {
+        let time_zone = self.get_time_zone();
+        let log = mount_log(tag, message, time_zone);
+        if self.write_in_files {
+            file::write(&log, time_zone)
+        }
+        print!("{log}");
     }
 
     pub fn println(&self, content: impl fmt::Display) {
         let content = content.to_string();
         let time_zone = self.get_time_zone();
         println!("{}", content);
+        if self.write_in_files {
+            file::writeln(&content, time_zone)
+        }
+    }
+
+    pub fn print(&self, content: impl fmt::Display) {
+        let content = content.to_string();
+        let time_zone = self.get_time_zone();
+        print!("{}", content);
         if self.write_in_files {
             file::write(&content, time_zone)
         }
@@ -69,7 +87,7 @@ impl Logger {
         );
         eprintln!("\x1b[0;31m{}\x1b[0m", &log);
         if self.write_in_files {
-            file::write(&log, time_zone)
+            file::writeln(&log, time_zone)
         }
         process::exit(1)
     }
