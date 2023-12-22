@@ -56,7 +56,6 @@ impl Logger {
         print!("{log}");
     }
 
-    #[track_caller]
     pub fn log_error(&self, tag: &str, error: impl fmt::Display, description: impl fmt::Display) {
         let time_zone = self.get_time_zone();
         let log = format!(
