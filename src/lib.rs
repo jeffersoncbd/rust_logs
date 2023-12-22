@@ -56,14 +56,21 @@ impl Logger {
         print!("{log}");
     }
 
-    pub fn log_error(&self, tag: &str, error: impl fmt::Display, description: impl fmt::Display) {
+    pub fn log_error(
+        &self,
+        tag: &str,
+        description: impl fmt::Display,
+        error_kind: std::io::ErrorKind,
+        error: impl fmt::Display,
+    ) {
         let time_zone = self.get_time_zone();
         let log = format!(
-            "\n❌ [{}] {} ERROR: {}\n❌ {}\n",
+            "\n❌ [{}] {} ERROR: {}\n❌ ({}) {}\n",
             time::now(time_zone).get_date_and_hour(),
             tag,
+            description,
+            error_kind,
             error,
-            description
         );
         eprintln!("\x1b[0;31m{}\x1b[0m", &log);
         if self.write_in_files {
@@ -90,15 +97,21 @@ impl Logger {
     }
 
     #[track_caller]
-    pub fn throw_error(&self, error: impl fmt::Display, description: impl fmt::Display) -> ! {
+    pub fn throw_error(
+        &self,
+        description: impl fmt::Display,
+        error_kind: std::io::ErrorKind,
+        error: impl fmt::Display,
+    ) -> ! {
         let location = Location::caller();
         let time_zone = self.get_time_zone();
         let log = format!(
-            "\n❌ [{}] CRITICAL ERROR - {}: {}\n❌ {}\n",
+            "\n❌ [{}] CRITICAL ERROR - {}: {}\n❌ ({}) {}\n",
             time::now(time_zone).get_date_and_hour(),
             location,
+            description,
+            error_kind,
             error,
-            description
         );
         eprintln!("\x1b[0;31m{}\x1b[0m", &log);
         if self.write_in_files {
