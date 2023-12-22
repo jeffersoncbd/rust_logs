@@ -56,6 +56,22 @@ impl Logger {
         print!("{log}");
     }
 
+    #[track_caller]
+    pub fn log_error(&self, tag: &str, error: impl fmt::Display, description: impl fmt::Display) {
+        let time_zone = self.get_time_zone();
+        let log = format!(
+            "\n❌ [{}] {} ERROR: {}\n❌ {}\n",
+            time::now(time_zone).get_date_and_hour(),
+            tag,
+            error,
+            description
+        );
+        eprintln!("\x1b[0;31m{}\x1b[0m", &log);
+        if self.write_in_files {
+            file::writeln(&log, time_zone)
+        }
+    }
+
     pub fn println(&self, content: impl fmt::Display) {
         let content = content.to_string();
         let time_zone = self.get_time_zone();
