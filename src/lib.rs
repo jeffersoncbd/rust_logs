@@ -56,20 +56,14 @@ impl Logger {
         print!("{log}");
     }
 
-    pub fn log_error(
-        &self,
-        tag: &str,
-        description: impl fmt::Display,
-        error_kind: std::io::ErrorKind,
-        error: impl fmt::Display,
-    ) {
+    pub fn log_error(&self, tag: &str, description: impl fmt::Display, error: std::io::Error) {
         let time_zone = self.get_time_zone();
         let log = format!(
             "\n❌ [{}] {} ERROR: {}\n❌ ({}) {}\n",
             time::now(time_zone).get_date_and_hour(),
             tag,
             description,
-            error_kind,
+            error.kind(),
             error,
         );
         eprintln!("\x1b[0;31m{}\x1b[0m", &log);
@@ -97,12 +91,7 @@ impl Logger {
     }
 
     #[track_caller]
-    pub fn throw_error(
-        &self,
-        description: impl fmt::Display,
-        error_kind: std::io::ErrorKind,
-        error: impl fmt::Display,
-    ) -> ! {
+    pub fn throw_error(&self, description: impl fmt::Display, error: std::io::Error) -> ! {
         let location = Location::caller();
         let time_zone = self.get_time_zone();
         let log = format!(
@@ -110,7 +99,7 @@ impl Logger {
             time::now(time_zone).get_date_and_hour(),
             location,
             description,
-            error_kind,
+            error.kind(),
             error,
         );
         eprintln!("\x1b[0;31m{}\x1b[0m", &log);
